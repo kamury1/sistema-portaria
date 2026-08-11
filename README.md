@@ -72,6 +72,12 @@ Sistema_Portaria/
 └── .gitignore
 ```
 
+🤖 Uso de Inteligência Artificial
+
+Este projeto foi desenvolvido como parte do meu aprendizado em programação, utilizando Inteligência Artificial como apoio na criação do código, resolução de problemas e compreensão da estrutura do sistema.
+
+O objetivo deste projeto é estudar o funcionamento do código, realizar modificações e, gradualmente, desenvolver maior autonomia em programação.
+
 ## 👨‍💻 Autor
 
 **Cristiano Souza**
