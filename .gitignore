@@ -1,0 +1,14 @@
+# Banco de dados
+portaria.db
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Python
+__pycache__/
+*.pyc
+
+# VS Code
+.vscode/
