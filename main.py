@@ -16,20 +16,21 @@ from acessos import abrir_registro_entrada
 from acessos import abrir_acessos_ativos
 from acessos import abrir_historico_acessos
 
+from importador import importar_planilha
+
 
 # ==========================================================
 # CORES DO SISTEMA
 # ==========================================================
 
-COR_FUNDO = "#0B1F33"          # Azul-marinho
-COR_CABECALHO = "#081724"      # Azul mais escuro
-COR_CARTAO = "#132A40"         # Azul dos blocos
-COR_BOTAO = "#1F3B57"         # Botão normal
-COR_BOTAO_ATIVO = "#294E70"   # Botão ao passar/clicar
-COR_TEXTO = "#FFFFFF"         # Branco
+COR_FUNDO = "#0B1F33"
+COR_CABECALHO = "#081724"
+COR_CARTAO = "#132A40"
+COR_BOTAO = "#1F3B57"
+COR_BOTAO_ATIVO = "#294E70"
+COR_TEXTO = "#FFFFFF"
 COR_TEXTO_SECUNDARIO = "#D9E2EC"
-COR_DESTAQUE = "#C62828"       # Vermelho
-COR_BORDA = "#274B6D"
+COR_DESTAQUE = "#C62828"
 
 
 # ==========================================================
@@ -109,7 +110,8 @@ frame_principal = tk.Frame(
 )
 
 frame_principal.pack(
-    expand=True
+    expand=True,
+    pady=15
 )
 
 
@@ -129,18 +131,13 @@ def criar_botao(
         font=("Arial", 12, "bold"),
         width=23,
         height=2,
-
         bg=COR_BOTAO,
         fg=COR_TEXTO,
-
         activebackground=COR_BOTAO_ATIVO,
         activeforeground=COR_TEXTO,
-
         relief="flat",
         borderwidth=0,
-
         cursor="hand2",
-
         command=comando
     )
 
@@ -159,16 +156,12 @@ frame_moradores = tk.LabelFrame(
     frame_principal,
     text="  MORADORES  ",
     font=("Arial", 14, "bold"),
-
     bg=COR_CARTAO,
     fg=COR_TEXTO,
-
     width=350,
     height=230,
-
     padx=25,
     pady=20,
-
     bd=2,
     relief="groove"
 )
@@ -176,8 +169,8 @@ frame_moradores = tk.LabelFrame(
 frame_moradores.grid(
     row=0,
     column=0,
-    padx=22,
-    pady=18
+    padx=18,
+    pady=15
 )
 
 frame_moradores.grid_propagate(
@@ -207,16 +200,12 @@ frame_visitantes = tk.LabelFrame(
     frame_principal,
     text="  VISITANTES  ",
     font=("Arial", 14, "bold"),
-
     bg=COR_CARTAO,
     fg=COR_TEXTO,
-
     width=350,
     height=230,
-
     padx=25,
     pady=20,
-
     bd=2,
     relief="groove"
 )
@@ -224,8 +213,8 @@ frame_visitantes = tk.LabelFrame(
 frame_visitantes.grid(
     row=0,
     column=1,
-    padx=22,
-    pady=18
+    padx=18,
+    pady=15
 )
 
 frame_visitantes.grid_propagate(
@@ -255,16 +244,12 @@ frame_prestadores = tk.LabelFrame(
     frame_principal,
     text="  PRESTADORES  ",
     font=("Arial", 14, "bold"),
-
     bg=COR_CARTAO,
     fg=COR_TEXTO,
-
     width=350,
     height=260,
-
     padx=25,
     pady=20,
-
     bd=2,
     relief="groove"
 )
@@ -272,8 +257,8 @@ frame_prestadores = tk.LabelFrame(
 frame_prestadores.grid(
     row=1,
     column=0,
-    padx=22,
-    pady=18
+    padx=18,
+    pady=15
 )
 
 frame_prestadores.grid_propagate(
@@ -303,16 +288,12 @@ frame_acessos = tk.LabelFrame(
     frame_principal,
     text="  CONTROLE DE ACESSO  ",
     font=("Arial", 14, "bold"),
-
     bg=COR_CARTAO,
     fg=COR_TEXTO,
-
     width=350,
     height=260,
-
     padx=25,
     pady=15,
-
     bd=2,
     relief="groove"
 )
@@ -320,8 +301,8 @@ frame_acessos = tk.LabelFrame(
 frame_acessos.grid(
     row=1,
     column=1,
-    padx=22,
-    pady=18
+    padx=18,
+    pady=15
 )
 
 frame_acessos.grid_propagate(
@@ -347,6 +328,44 @@ criar_botao(
     frame_acessos,
     "Histórico de Acessos",
     lambda: abrir_historico_acessos(janela)
+)
+
+
+# ==========================================================
+# FERRAMENTAS
+# ==========================================================
+
+frame_ferramentas = tk.LabelFrame(
+    frame_principal,
+    text="  FERRAMENTAS  ",
+    font=("Arial", 14, "bold"),
+    bg=COR_CARTAO,
+    fg=COR_TEXTO,
+    width=350,
+    height=180,
+    padx=25,
+    pady=20,
+    bd=2,
+    relief="groove"
+)
+
+frame_ferramentas.grid(
+    row=2,
+    column=0,
+    columnspan=2,
+    padx=18,
+    pady=15
+)
+
+frame_ferramentas.grid_propagate(
+    False
+)
+
+
+criar_botao(
+    frame_ferramentas,
+    "Importar Planilha",
+    lambda: importar_planilha(janela)
 )
 
 
