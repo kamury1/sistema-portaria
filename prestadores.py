@@ -1,6 +1,14 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 
+from validacoes import (
+    normalizar_texto,
+    validar_nome,
+    validar_documento,
+    validar_telefone,
+    documento_duplicado,
+)
+
 from banco import (
     cadastrar_prestador,
     listar_prestadores,
@@ -266,24 +274,45 @@ def abrir_prestadores(janela_principal):
         entrada_nome.focus_set()
 
     def salvar():
-        nome = entrada_nome.get().strip()
-        documento = entrada_documento.get().strip()
-        empresa = entrada_empresa.get().strip()
-        telefone = entrada_telefone.get().strip()
+        nome = normalizar_texto(entrada_nome.get())
+        documento = normalizar_texto(entrada_documento.get())
+        empresa = normalizar_texto(entrada_empresa.get())
+        telefone = normalizar_texto(entrada_telefone.get())
 
-        if not nome:
-            messagebox.showwarning(
-                "Atenção",
-                "Informe o nome do prestador.",
-                parent=janela_prestadores,
-            )
+        valido, resultado = validar_nome(nome)
+        if not valido:
+            messagebox.showwarning("Atenção", resultado, parent=janela_prestadores)
             entrada_nome.focus_set()
             return
+        nome = resultado
 
-        if not documento:
+        valido, resultado = validar_documento(documento)
+        if not valido:
+            messagebox.showwarning("Atenção", resultado, parent=janela_prestadores)
+            entrada_documento.focus_set()
+            return
+        documento = resultado
+
+        valido, resultado = validar_telefone(telefone)
+        if not valido:
+            messagebox.showwarning("Atenção", resultado, parent=janela_prestadores)
+            entrada_telefone.focus_set()
+            return
+        telefone = resultado
+
+        if len(empresa) > 100:
             messagebox.showwarning(
                 "Atenção",
-                "Informe o documento do prestador.",
+                "O nome da empresa está muito longo.",
+                parent=janela_prestadores,
+            )
+            entrada_empresa.focus_set()
+            return
+
+        if documento_duplicado(documento, listar_prestadores(), 2):
+            messagebox.showwarning(
+                "Cadastro duplicado",
+                "Já existe um prestador cadastrado com este documento.",
                 parent=janela_prestadores,
             )
             entrada_documento.focus_set()
@@ -806,24 +835,50 @@ def abrir_lista_prestadores(janela_principal):
         )
 
         def salvar_alteracoes():
-            nome = entrada_nome.get().strip()
-            documento = entrada_documento.get().strip()
-            empresa = entrada_empresa.get().strip()
-            telefone = entrada_telefone.get().strip()
+            nome = normalizar_texto(entrada_nome.get())
+            documento = normalizar_texto(entrada_documento.get())
+            empresa = normalizar_texto(entrada_empresa.get())
+            telefone = normalizar_texto(entrada_telefone.get())
 
-            if not nome:
-                messagebox.showwarning(
-                    "Atenção",
-                    "Informe o nome do prestador.",
-                    parent=janela_editar,
-                )
+            valido, resultado = validar_nome(nome)
+            if not valido:
+                messagebox.showwarning("Atenção", resultado, parent=janela_editar)
                 entrada_nome.focus_set()
                 return
+            nome = resultado
 
-            if not documento:
+            valido, resultado = validar_documento(documento)
+            if not valido:
+                messagebox.showwarning("Atenção", resultado, parent=janela_editar)
+                entrada_documento.focus_set()
+                return
+            documento = resultado
+
+            valido, resultado = validar_telefone(telefone)
+            if not valido:
+                messagebox.showwarning("Atenção", resultado, parent=janela_editar)
+                entrada_telefone.focus_set()
+                return
+            telefone = resultado
+
+            if len(empresa) > 100:
                 messagebox.showwarning(
                     "Atenção",
-                    "Informe o documento do prestador.",
+                    "O nome da empresa está muito longo.",
+                    parent=janela_editar,
+                )
+                entrada_empresa.focus_set()
+                return
+
+            if documento_duplicado(
+                documento,
+                listar_prestadores(),
+                2,
+                id_ignorar=id_prestador,
+            ):
+                messagebox.showwarning(
+                    "Cadastro duplicado",
+                    "Já existe outro prestador cadastrado com este documento.",
                     parent=janela_editar,
                 )
                 entrada_documento.focus_set()

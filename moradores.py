@@ -1,6 +1,14 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 
+from validacoes import (
+    normalizar_texto,
+    validar_nome,
+    validar_apartamento,
+    validar_vagas,
+    validar_telefone,
+)
+
 from banco import (
     cadastrar_morador,
     listar_moradores,
@@ -227,21 +235,39 @@ def abrir_moradores(janela_principal):
         entrada_nome.focus_set()
 
     def salvar():
-        nome = entrada_nome.get().strip()
-        apartamento = entrada_apartamento.get().strip()
-        vagas = entrada_vagas.get().strip()
-        telefone = entrada_telefone.get().strip()
+        nome = normalizar_texto(entrada_nome.get())
+        apartamento = normalizar_texto(entrada_apartamento.get())
+        vagas = normalizar_texto(entrada_vagas.get())
+        telefone = normalizar_texto(entrada_telefone.get())
         tipo = tipo_morador.get()
 
-        if not nome:
-            messagebox.showwarning("Atenção", "Informe o nome do morador.", parent=janela_moradores)
+        valido, resultado = validar_nome(nome)
+        if not valido:
+            messagebox.showwarning("Atenção", resultado, parent=janela_moradores)
             entrada_nome.focus_set()
             return
+        nome = resultado
 
-        if not apartamento:
-            messagebox.showwarning("Atenção", "Informe o apartamento.", parent=janela_moradores)
+        valido, resultado = validar_apartamento(apartamento)
+        if not valido:
+            messagebox.showwarning("Atenção", resultado, parent=janela_moradores)
             entrada_apartamento.focus_set()
             return
+        apartamento = resultado
+
+        valido, resultado = validar_vagas(vagas)
+        if not valido:
+            messagebox.showwarning("Atenção", resultado, parent=janela_moradores)
+            entrada_vagas.focus_set()
+            return
+        vagas = resultado
+
+        valido, resultado = validar_telefone(telefone)
+        if not valido:
+            messagebox.showwarning("Atenção", resultado, parent=janela_moradores)
+            entrada_telefone.focus_set()
+            return
+        telefone = resultado
 
         try:
             cadastrar_morador(nome, apartamento, vagas, telefone, tipo)
@@ -562,19 +588,39 @@ def abrir_lista_moradores(janela_principal):
         combo_tipo.grid(row=4, column=1, sticky="ew", ipady=5, pady=8)
 
         def salvar_alteracoes():
-            nome = entrada_nome.get().strip()
-            apartamento = entrada_apartamento.get().strip()
-            vagas = entrada_vagas.get().strip()
-            telefone = entrada_telefone.get().strip()
+            nome = normalizar_texto(entrada_nome.get())
+            apartamento = normalizar_texto(entrada_apartamento.get())
+            vagas = normalizar_texto(entrada_vagas.get())
+            telefone = normalizar_texto(entrada_telefone.get())
             tipo = tipo_morador.get()
 
-            if not nome or not apartamento:
-                messagebox.showwarning(
-                    "Atenção",
-                    "Nome e apartamento são obrigatórios.",
-                    parent=janela_editar,
-                )
+            valido, resultado = validar_nome(nome)
+            if not valido:
+                messagebox.showwarning("Atenção", resultado, parent=janela_editar)
+                entrada_nome.focus_set()
                 return
+            nome = resultado
+
+            valido, resultado = validar_apartamento(apartamento)
+            if not valido:
+                messagebox.showwarning("Atenção", resultado, parent=janela_editar)
+                entrada_apartamento.focus_set()
+                return
+            apartamento = resultado
+
+            valido, resultado = validar_vagas(vagas)
+            if not valido:
+                messagebox.showwarning("Atenção", resultado, parent=janela_editar)
+                entrada_vagas.focus_set()
+                return
+            vagas = resultado
+
+            valido, resultado = validar_telefone(telefone)
+            if not valido:
+                messagebox.showwarning("Atenção", resultado, parent=janela_editar)
+                entrada_telefone.focus_set()
+                return
+            telefone = resultado
 
             try:
                 atualizar_morador(id_morador, nome, apartamento, vagas, telefone, tipo)

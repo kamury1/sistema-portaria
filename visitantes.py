@@ -1,6 +1,14 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 
+from validacoes import (
+    normalizar_texto,
+    validar_nome,
+    validar_documento,
+    validar_telefone,
+    documento_duplicado,
+)
+
 from banco import (
     cadastrar_visitante,
     listar_visitantes,
@@ -207,23 +215,35 @@ def abrir_visitantes(janela_principal):
         entrada_nome.focus_set()
 
     def salvar():
-        nome = entrada_nome.get().strip()
-        documento = entrada_documento.get().strip()
-        telefone = entrada_telefone.get().strip()
+        nome = normalizar_texto(entrada_nome.get())
+        documento = normalizar_texto(entrada_documento.get())
+        telefone = normalizar_texto(entrada_telefone.get())
 
-        if not nome:
-            messagebox.showwarning(
-                "Atenção",
-                "Informe o nome do visitante.",
-                parent=janela_visitantes,
-            )
+        valido, resultado = validar_nome(nome)
+        if not valido:
+            messagebox.showwarning("Atenção", resultado, parent=janela_visitantes)
             entrada_nome.focus_set()
             return
+        nome = resultado
 
-        if not documento:
+        valido, resultado = validar_documento(documento)
+        if not valido:
+            messagebox.showwarning("Atenção", resultado, parent=janela_visitantes)
+            entrada_documento.focus_set()
+            return
+        documento = resultado
+
+        valido, resultado = validar_telefone(telefone)
+        if not valido:
+            messagebox.showwarning("Atenção", resultado, parent=janela_visitantes)
+            entrada_telefone.focus_set()
+            return
+        telefone = resultado
+
+        if documento_duplicado(documento, listar_visitantes(), 2):
             messagebox.showwarning(
-                "Atenção",
-                "Informe o documento do visitante.",
+                "Cadastro duplicado",
+                "Já existe um visitante cadastrado com este documento.",
                 parent=janela_visitantes,
             )
             entrada_documento.focus_set()
@@ -498,23 +518,40 @@ def abrir_lista_visitantes(janela_principal):
         entrada_telefone.insert(0, telefone_atual)
 
         def salvar_alteracoes():
-            nome = entrada_nome.get().strip()
-            documento = entrada_documento.get().strip()
-            telefone = entrada_telefone.get().strip()
+            nome = normalizar_texto(entrada_nome.get())
+            documento = normalizar_texto(entrada_documento.get())
+            telefone = normalizar_texto(entrada_telefone.get())
 
-            if not nome:
-                messagebox.showwarning(
-                    "Atenção",
-                    "Informe o nome do visitante.",
-                    parent=janela_editar,
-                )
+            valido, resultado = validar_nome(nome)
+            if not valido:
+                messagebox.showwarning("Atenção", resultado, parent=janela_editar)
                 entrada_nome.focus_set()
                 return
+            nome = resultado
 
-            if not documento:
+            valido, resultado = validar_documento(documento)
+            if not valido:
+                messagebox.showwarning("Atenção", resultado, parent=janela_editar)
+                entrada_documento.focus_set()
+                return
+            documento = resultado
+
+            valido, resultado = validar_telefone(telefone)
+            if not valido:
+                messagebox.showwarning("Atenção", resultado, parent=janela_editar)
+                entrada_telefone.focus_set()
+                return
+            telefone = resultado
+
+            if documento_duplicado(
+                documento,
+                listar_visitantes(),
+                2,
+                id_ignorar=id_visitante,
+            ):
                 messagebox.showwarning(
-                    "Atenção",
-                    "Informe o documento do visitante.",
+                    "Cadastro duplicado",
+                    "Já existe outro visitante cadastrado com este documento.",
                     parent=janela_editar,
                 )
                 entrada_documento.focus_set()
