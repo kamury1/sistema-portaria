@@ -1,6 +1,9 @@
 # Banco de dados
 portaria.db
 
+# Backups locais do banco
+backups/
+
 # PyInstaller
 build/
 dist/

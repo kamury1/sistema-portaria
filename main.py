@@ -15,6 +15,7 @@ from visitantes import abrir_visitantes, abrir_lista_visitantes
 from prestadores import abrir_prestadores, abrir_lista_prestadores
 from acessos import abrir_registro_entrada, abrir_acessos_ativos, abrir_historico_acessos
 from importador import importar_planilha
+from backup import fazer_backup_banco
 
 
 # ==========================================================
@@ -172,6 +173,7 @@ criar_botao_menu(sidebar, "≡  Histórico de acessos", lambda: abrir_e_atualiza
 
 criar_titulo_secao(sidebar, "Ferramentas")
 criar_botao_menu(sidebar, "↑  Importar planilha", lambda: importar_planilha(janela))
+criar_botao_menu(sidebar, "▣  Fazer backup", lambda: fazer_backup_banco(janela))
 
 # Informações no rodapé do menu
 rodape_sidebar = tk.Frame(sidebar, bg=COR_SIDEBAR)
