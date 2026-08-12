@@ -140,6 +140,41 @@ def criar_tabelas():
 
         conexao.commit()
 
+    # ======================================================
+    # ATUALIZAÇÃO AUTOMÁTICA DA TABELA DE ACESSOS
+    # ======================================================
+    # Acrescenta os operadores responsáveis pela entrada e
+    # pela saída sem apagar os acessos que já existem.
+
+    cursor.execute("""
+        PRAGMA table_info(acessos_prestadores)
+    """)
+
+    colunas_acessos = cursor.fetchall()
+
+    nomes_colunas_acessos = [
+        coluna[1]
+        for coluna in colunas_acessos
+    ]
+
+    if "operador_entrada_id" not in nomes_colunas_acessos:
+
+        cursor.execute("""
+            ALTER TABLE acessos_prestadores
+            ADD COLUMN operador_entrada_id INTEGER
+        """)
+
+        conexao.commit()
+
+    if "operador_saida_id" not in nomes_colunas_acessos:
+
+        cursor.execute("""
+            ALTER TABLE acessos_prestadores
+            ADD COLUMN operador_saida_id INTEGER
+        """)
+
+        conexao.commit()
+
 
 # ==========================================================
 # CADASTRAR MORADOR
@@ -401,7 +436,8 @@ def registrar_entrada_prestador(
     prestador_id,
     apartamento,
     data_entrada,
-    hora_entrada
+    hora_entrada,
+    operador_entrada_id
 ):
 
     cursor.execute("""
@@ -410,14 +446,16 @@ def registrar_entrada_prestador(
             apartamento,
             data_entrada,
             hora_entrada,
-            status
+            status,
+            operador_entrada_id
         )
-        VALUES (?, ?, ?, ?, 'ATIVO')
+        VALUES (?, ?, ?, ?, 'ATIVO', ?)
     """, (
         prestador_id,
         apartamento,
         data_entrada,
-        hora_entrada
+        hora_entrada,
+        operador_entrada_id
     ))
 
     conexao.commit()
@@ -460,7 +498,8 @@ def listar_acessos_ativos():
 def registrar_saida_prestador(
     id_acesso,
     data_saida,
-    hora_saida
+    hora_saida,
+    operador_saida_id
 ):
 
     cursor.execute("""
@@ -469,12 +508,14 @@ def registrar_saida_prestador(
         SET
             data_saida = ?,
             hora_saida = ?,
-            status = 'FINALIZADO'
+            status = 'FINALIZADO',
+            operador_saida_id = ?
 
         WHERE id = ?
     """, (
         data_saida,
         hora_saida,
+        operador_saida_id,
         id_acesso
     ))
 
@@ -498,13 +539,23 @@ def listar_historico_acessos():
             acessos_prestadores.hora_entrada,
             acessos_prestadores.data_saida,
             acessos_prestadores.hora_saida,
-            acessos_prestadores.status
+            acessos_prestadores.status,
+            COALESCE(operador_entrada.nome, '-'),
+            COALESCE(operador_saida.nome, '-')
 
         FROM acessos_prestadores
 
         INNER JOIN prestadores
         ON prestadores.id =
            acessos_prestadores.prestador_id
+
+        LEFT JOIN operadores AS operador_entrada
+        ON operador_entrada.id =
+           acessos_prestadores.operador_entrada_id
+
+        LEFT JOIN operadores AS operador_saida
+        ON operador_saida.id =
+           acessos_prestadores.operador_saida_id
 
         ORDER BY acessos_prestadores.id DESC
     """)

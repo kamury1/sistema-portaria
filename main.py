@@ -188,8 +188,23 @@ criar_botao_menu(sidebar, "+  Cadastrar prestador", lambda: abrir_e_atualizar(ab
 criar_botao_menu(sidebar, "   Prestadores cadastrados", lambda: abrir_e_atualizar(abrir_lista_prestadores))
 
 criar_titulo_secao(sidebar, "Controle de acesso")
-criar_botao_menu(sidebar, "→  Registrar entrada", lambda: abrir_e_atualizar(abrir_registro_entrada), destaque=True)
-criar_botao_menu(sidebar, "●  Acessos ativos", lambda: abrir_e_atualizar(abrir_acessos_ativos))
+criar_botao_menu(
+    sidebar,
+    "→  Registrar entrada",
+    lambda: (
+        abrir_registro_entrada(janela, operador_atual),
+        janela.after(300, atualizar_dashboard)
+    ),
+    destaque=True
+)
+criar_botao_menu(
+    sidebar,
+    "●  Acessos ativos",
+    lambda: (
+        abrir_acessos_ativos(janela, operador_atual),
+        janela.after(300, atualizar_dashboard)
+    )
+)
 criar_botao_menu(sidebar, "≡  Histórico de acessos", lambda: abrir_e_atualizar(abrir_historico_acessos))
 
 criar_titulo_secao(sidebar, "Ferramentas")
@@ -540,7 +555,10 @@ criar_acao_rapida(
     2,
     "→  Registrar entrada",
     "Registre uma entrada e acompanhe os acessos ativos.",
-    lambda: abrir_e_atualizar(abrir_registro_entrada),
+    lambda: (
+        abrir_registro_entrada(janela, operador_atual),
+        janela.after(300, atualizar_dashboard)
+    ),
     principal=True,
 )
 

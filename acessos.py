@@ -112,7 +112,7 @@ def criar_topo(janela, titulo, subtitulo):
     ).pack(anchor="w", padx=31, pady=(3, 0))
 
 
-def abrir_registro_entrada(janela_principal):
+def abrir_registro_entrada(janela_principal, operador_atual):
     janela = tk.Toplevel(janela_principal)
     janela.title("Registrar Entrada de Prestador")
     janela.configure(bg=COR_FUNDO)
@@ -206,7 +206,8 @@ def abrir_registro_entrada(janela_principal):
                 mapa[selecionado],
                 apartamento,
                 data,
-                hora
+                hora,
+                operador_atual["id"]
             )
         except Exception as erro:
             messagebox.showerror(
@@ -218,7 +219,10 @@ def abrir_registro_entrada(janela_principal):
 
         messagebox.showinfo(
             "Entrada registrada",
-            f"Entrada registrada com sucesso!\n\nData: {data}\nHora: {hora}",
+            f"Entrada registrada com sucesso!\n\n"
+            f"Data: {data}\n"
+            f"Hora: {hora}\n"
+            f"Operador: {operador_atual['nome']}",
             parent=janela
         )
 
@@ -236,7 +240,7 @@ def abrir_registro_entrada(janela_principal):
     apto.bind("<Return>", lambda e: registrar())
 
 
-def abrir_acessos_ativos(janela_principal):
+def abrir_acessos_ativos(janela_principal, operador_atual):
     janela = tk.Toplevel(janela_principal)
     janela.title("Acessos Ativos")
     janela.configure(bg=COR_FUNDO)
@@ -353,7 +357,12 @@ def abrir_acessos_ativos(janela_principal):
         hora = agora.strftime("%H:%M:%S")
 
         try:
-            registrar_saida_prestador(dados[0], data, hora)
+            registrar_saida_prestador(
+                dados[0],
+                data,
+                hora,
+                operador_atual["id"]
+            )
         except Exception as erro:
             messagebox.showerror(
                 "Erro",
@@ -364,7 +373,10 @@ def abrir_acessos_ativos(janela_principal):
 
         messagebox.showinfo(
             "Saída registrada",
-            f"Saída registrada com sucesso!\n\nData: {data}\nHora: {hora}",
+            f"Saída registrada com sucesso!\n\n"
+            f"Data: {data}\n"
+            f"Hora: {hora}\n"
+            f"Operador: {operador_atual['nome']}",
             parent=janela
         )
         carregar()
@@ -445,7 +457,8 @@ def abrir_historico_acessos(janela_principal):
 
     colunas = (
         "id", "nome", "documento", "empresa", "apartamento",
-        "data_entrada", "hora_entrada", "data_saida", "hora_saida", "status"
+        "data_entrada", "hora_entrada", "data_saida", "hora_saida", "status",
+        "operador_entrada", "operador_saida"
     )
     tabela = ttk.Treeview(
         quadro, columns=colunas, show="headings",
@@ -454,13 +467,14 @@ def abrir_historico_acessos(janela_principal):
 
     titulos = (
         "ID", "Nome", "Documento", "Empresa", "Apartamento",
-        "Data Entrada", "Hora Entrada", "Data Saída", "Hora Saída", "Status"
+        "Data Entrada", "Hora Entrada", "Data Saída", "Hora Saída", "Status",
+        "Operador Entrada", "Operador Saída"
     )
 
     for coluna, titulo in zip(colunas, titulos):
         tabela.heading(coluna, text=titulo)
 
-    larguras = (55, 220, 150, 190, 105, 110, 100, 110, 100, 100)
+    larguras = (55, 220, 150, 190, 105, 110, 100, 110, 100, 100, 180, 180)
     for coluna, largura in zip(colunas, larguras):
         tabela.column(
             coluna, width=largura,
@@ -579,10 +593,12 @@ def abrir_historico_acessos(janela_principal):
                 "Data Saída",
                 "Hora Saída",
                 "Status",
+                "Operador Entrada",
+                "Operador Saída",
             ]
 
             # Título
-            ws.merge_cells("A1:J1")
+            ws.merge_cells("A1:L1")
             titulo = ws["A1"]
             titulo.value = "Histórico de Acessos de Prestadores"
             titulo.font = Font(bold=True, size=16, color="FFFFFF")
@@ -599,7 +615,7 @@ def abrir_historico_acessos(janela_principal):
             if data.get().strip():
                 filtros_usados.append(f"Data: {data.get().strip()}")
 
-            ws.merge_cells("A2:J2")
+            ws.merge_cells("A2:L2")
             info = ws["A2"]
             info.value = (
                 "Filtros: " + " | ".join(filtros_usados)
@@ -650,7 +666,7 @@ def abrir_historico_acessos(janela_principal):
                         "solid",
                         fgColor="F3F6FA",
                     )
-                    for coluna in range(1, 11):
+                    for coluna in range(1, 13):
                         ws.cell(
                             row=linha_excel,
                             column=coluna,
@@ -668,13 +684,15 @@ def abrir_historico_acessos(janela_principal):
                 "H": 14,
                 "I": 13,
                 "J": 14,
+                "K": 24,
+                "L": 24,
             }
 
             for coluna, largura in larguras.items():
                 ws.column_dimensions[coluna].width = largura
 
             ws.freeze_panes = "A5"
-            ws.auto_filter.ref = f"A4:J{4 + len(itens)}"
+            ws.auto_filter.ref = f"A4:L{4 + len(itens)}"
 
             wb.save(caminho)
 
