@@ -95,6 +95,23 @@ def criar_tabelas():
         )
     """)
 
+
+    # ------------------------------------------------------
+    # OPERADORES
+    # ------------------------------------------------------
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS operadores (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            usuario TEXT NOT NULL UNIQUE,
+            senha_hash TEXT NOT NULL,
+            senha_salt TEXT NOT NULL,
+            ativo INTEGER NOT NULL DEFAULT 1,
+            criado_em TEXT NOT NULL
+        )
+    """)
+
     conexao.commit()
 
     # ======================================================
@@ -607,3 +624,83 @@ def excluir_visitante(id_visitante):
     ))
 
     conexao.commit()
+
+# ==========================================================
+# OPERADORES
+# ==========================================================
+
+def contar_operadores_ativos():
+
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM operadores
+        WHERE ativo = 1
+    """)
+
+    return cursor.fetchone()[0]
+
+
+def cadastrar_operador(
+    nome,
+    usuario,
+    senha_hash,
+    senha_salt,
+    criado_em
+):
+
+    cursor.execute("""
+        INSERT INTO operadores
+        (
+            nome,
+            usuario,
+            senha_hash,
+            senha_salt,
+            ativo,
+            criado_em
+        )
+        VALUES (?, ?, ?, ?, 1, ?)
+    """, (
+        nome,
+        usuario,
+        senha_hash,
+        senha_salt,
+        criado_em
+    ))
+
+    conexao.commit()
+
+
+def buscar_operador_por_usuario(usuario):
+
+    cursor.execute("""
+        SELECT
+            id,
+            nome,
+            usuario,
+            senha_hash,
+            senha_salt,
+            ativo
+        FROM operadores
+        WHERE lower(usuario) = lower(?)
+        LIMIT 1
+    """, (
+        usuario,
+    ))
+
+    return cursor.fetchone()
+
+
+def listar_operadores():
+
+    cursor.execute("""
+        SELECT
+            id,
+            nome,
+            usuario,
+            ativo,
+            criado_em
+        FROM operadores
+        ORDER BY nome
+    """)
+
+    return cursor.fetchall()

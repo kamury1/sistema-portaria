@@ -17,6 +17,7 @@ from acessos import abrir_registro_entrada, abrir_acessos_ativos, abrir_historic
 from importador import importar_planilha
 from backup import fazer_backup_banco
 from busca_global import abrir_busca_global
+from login import solicitar_login
 
 
 # ==========================================================
@@ -51,6 +52,7 @@ criar_tabelas()
 # ==========================================================
 
 janela = tk.Tk()
+janela.withdraw()
 janela.title("Sistema de Portaria - Edifício Oxygen | Veper")
 janela.configure(bg=COR_FUNDO)
 janela.minsize(1100, 680)
@@ -66,6 +68,24 @@ try:
     if os.path.exists(caminho_icone):
         janela.iconbitmap(caminho_icone)
 except Exception:
+    pass
+
+
+# ==========================================================
+# LOGIN DO OPERADOR
+# ==========================================================
+
+operador_atual = solicitar_login(janela)
+
+if operador_atual is None:
+    janela.destroy()
+    raise SystemExit
+
+janela.deiconify()
+
+try:
+    janela.state("zoomed")
+except tk.TclError:
     pass
 
 
@@ -192,11 +212,19 @@ tk.Label(
 
 tk.Label(
     rodape_sidebar,
-    text="Cristiano",
+    text=operador_atual["nome"],
     font=(FONTE, 11, "bold"),
     bg=COR_SIDEBAR,
     fg=COR_TEXTO,
 ).pack(anchor="w", pady=(2, 0))
+
+tk.Label(
+    rodape_sidebar,
+    text=f'@{operador_atual["usuario"]}',
+    font=(FONTE, 8),
+    bg=COR_SIDEBAR,
+    fg=COR_TEXTO_2,
+).pack(anchor="w", pady=(1, 0))
 
 
 # ----------------------------------------------------------
