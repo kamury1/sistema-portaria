@@ -1,6 +1,8 @@
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import messagebox, ttk, filedialog
 from datetime import datetime
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 
 from banco import (
     listar_prestadores,
@@ -533,13 +535,179 @@ def abrir_historico_acessos(janela_principal):
         carregar()
         nome.focus_set()
 
+    def exportar_excel():
+        itens = tabela.get_children()
+
+        if not itens:
+            messagebox.showwarning(
+                "Exportar Excel",
+                "Não há registros na tabela para exportar.",
+                parent=janela,
+            )
+            return
+
+        nome_padrao = (
+            "historico_acessos_"
+            + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            + ".xlsx"
+        )
+
+        caminho = filedialog.asksaveasfilename(
+            parent=janela,
+            title="Salvar histórico de acessos",
+            defaultextension=".xlsx",
+            initialfile=nome_padrao,
+            filetypes=[("Planilha do Excel", "*.xlsx")],
+        )
+
+        if not caminho:
+            return
+
+        try:
+            wb = Workbook()
+            ws = wb.active
+            ws.title = "Histórico de Acessos"
+
+            cabecalhos = [
+                "ID",
+                "Nome",
+                "Documento",
+                "Empresa",
+                "Apartamento",
+                "Data Entrada",
+                "Hora Entrada",
+                "Data Saída",
+                "Hora Saída",
+                "Status",
+            ]
+
+            # Título
+            ws.merge_cells("A1:J1")
+            titulo = ws["A1"]
+            titulo.value = "Histórico de Acessos de Prestadores"
+            titulo.font = Font(bold=True, size=16, color="FFFFFF")
+            titulo.fill = PatternFill("solid", fgColor="111D30")
+            titulo.alignment = Alignment(horizontal="center", vertical="center")
+            ws.row_dimensions[1].height = 26
+
+            # Informações do filtro usado
+            filtros_usados = []
+            if nome.get().strip():
+                filtros_usados.append(f"Nome: {nome.get().strip()}")
+            if apto.get().strip():
+                filtros_usados.append(f"Apartamento: {apto.get().strip()}")
+            if data.get().strip():
+                filtros_usados.append(f"Data: {data.get().strip()}")
+
+            ws.merge_cells("A2:J2")
+            info = ws["A2"]
+            info.value = (
+                "Filtros: " + " | ".join(filtros_usados)
+                if filtros_usados
+                else "Filtros: nenhum — todos os registros exibidos"
+            )
+            info.font = Font(italic=True, size=10, color="5B6573")
+            info.alignment = Alignment(horizontal="left")
+
+            # Cabeçalho da tabela
+            preenchimento_cabecalho = PatternFill("solid", fgColor="1B2D45")
+            fonte_cabecalho = Font(bold=True, color="FFFFFF")
+            borda = Border(
+                bottom=Side(style="thin", color="C8D1DC")
+            )
+
+            for coluna, texto in enumerate(cabecalhos, start=1):
+                celula = ws.cell(row=4, column=coluna, value=texto)
+                celula.fill = preenchimento_cabecalho
+                celula.font = fonte_cabecalho
+                celula.alignment = Alignment(
+                    horizontal="center",
+                    vertical="center",
+                )
+                celula.border = borda
+
+            # Exporta exatamente o que está visível na tabela
+            for linha_excel, item_id in enumerate(itens, start=5):
+                valores = tabela.item(item_id)["values"]
+
+                for coluna, valor in enumerate(valores, start=1):
+                    celula = ws.cell(
+                        row=linha_excel,
+                        column=coluna,
+                        value=valor,
+                    )
+                    celula.alignment = Alignment(
+                        vertical="center",
+                        horizontal=(
+                            "center"
+                            if coluna in (1, 5, 6, 7, 8, 9, 10)
+                            else "left"
+                        ),
+                    )
+
+                if linha_excel % 2 == 0:
+                    preenchimento = PatternFill(
+                        "solid",
+                        fgColor="F3F6FA",
+                    )
+                    for coluna in range(1, 11):
+                        ws.cell(
+                            row=linha_excel,
+                            column=coluna,
+                        ).fill = preenchimento
+
+            # Larguras de coluna
+            larguras = {
+                "A": 8,
+                "B": 28,
+                "C": 20,
+                "D": 26,
+                "E": 14,
+                "F": 14,
+                "G": 13,
+                "H": 14,
+                "I": 13,
+                "J": 14,
+            }
+
+            for coluna, largura in larguras.items():
+                ws.column_dimensions[coluna].width = largura
+
+            ws.freeze_panes = "A5"
+            ws.auto_filter.ref = f"A4:J{4 + len(itens)}"
+
+            wb.save(caminho)
+
+            messagebox.showinfo(
+                "Exportação concluída",
+                "Histórico exportado com sucesso!\n\n"
+                f"Arquivo:\n{caminho}",
+                parent=janela,
+            )
+
+        except Exception as erro:
+            messagebox.showerror(
+                "Erro na exportação",
+                "Não foi possível gerar a planilha.\n\n"
+                f"{erro}",
+                parent=janela,
+            )
+
     criar_botao(
         filtros, "Pesquisar", pesquisar
     ).grid(row=0, column=6, padx=(8, 6))
 
     criar_botao(
         filtros, "Limpar filtros", limpar
-    ).grid(row=0, column=7, padx=(0, 14))
+    ).grid(row=0, column=7, padx=(0, 6))
+
+    criar_botao(
+        filtros,
+        "Exportar Excel",
+        exportar_excel,
+        COR_SUCESSO,
+        COR_SUCESSO_HOVER,
+    ).grid(row=0, column=8, padx=(0, 14))
 
     for campo in (nome, apto, data):
         campo.bind("<Return>", lambda e: pesquisar())
