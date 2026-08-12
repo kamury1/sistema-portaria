@@ -16,6 +16,7 @@ from prestadores import abrir_prestadores, abrir_lista_prestadores
 from acessos import abrir_registro_entrada, abrir_acessos_ativos, abrir_historico_acessos
 from importador import importar_planilha
 from backup import fazer_backup_banco
+from busca_global import abrir_busca_global
 
 
 # ==========================================================
@@ -354,6 +355,75 @@ criar_card(2, "PRESTADORES", "Cadastros no sistema", "prestadores", "#EF6C00")
 criar_card(3, "ACESSOS ATIVOS", "Pessoas com entrada ativa", "acessos", COR_SUCESSO)
 
 
+
+# ==========================================================
+# BUSCA RÁPIDA
+# ==========================================================
+
+frame_busca = tk.Frame(
+    painel,
+    bg=COR_CARTAO,
+    highlightthickness=1,
+    highlightbackground=COR_CARTAO_BORDA,
+)
+frame_busca.grid(row=2, column=0, columnspan=4, sticky="ew", pady=(22, 0))
+frame_busca.grid_columnconfigure(1, weight=1)
+
+tk.Label(
+    frame_busca,
+    text="Busca rápida",
+    font=(FONTE, 11, "bold"),
+    bg=COR_CARTAO,
+    fg=COR_TEXTO,
+).grid(row=0, column=0, padx=(22, 14), pady=18, sticky="w")
+
+entrada_busca_global = tk.Entry(
+    frame_busca,
+    font=(FONTE, 11),
+    bg=COR_SIDEBAR,
+    fg=COR_TEXTO,
+    insertbackground=COR_TEXTO,
+    relief="flat",
+    bd=0,
+    highlightthickness=1,
+    highlightbackground=COR_CARTAO_BORDA,
+    highlightcolor="#4C78A8",
+)
+entrada_busca_global.grid(row=0, column=1, sticky="ew", ipady=8, pady=12)
+
+def executar_busca_global():
+    termo = entrada_busca_global.get().strip()
+    abrir_busca_global(janela, termo)
+
+btn_busca_global = tk.Button(
+    frame_busca,
+    text="Pesquisar",
+    command=executar_busca_global,
+    font=(FONTE, 9, "bold"),
+    bg=COR_BOTAO,
+    fg=COR_TEXTO,
+    activebackground=COR_BOTAO_HOVER,
+    activeforeground=COR_TEXTO,
+    relief="flat",
+    bd=0,
+    cursor="hand2",
+    padx=16,
+    pady=8,
+)
+btn_busca_global.grid(row=0, column=2, padx=(12, 22), pady=12)
+adicionar_hover(btn_busca_global)
+
+entrada_busca_global.bind("<Return>", lambda _evento: executar_busca_global())
+
+tk.Label(
+    frame_busca,
+    text="Pesquise por nome, apartamento, documento, empresa ou telefone.",
+    font=(FONTE, 8),
+    bg=COR_CARTAO,
+    fg=COR_TEXTO_2,
+).grid(row=1, column=1, columnspan=2, sticky="w", pady=(0, 12))
+
+
 # ==========================================================
 # AÇÕES RÁPIDAS
 # ==========================================================
@@ -364,7 +434,7 @@ frame_acoes = tk.Frame(
     highlightthickness=1,
     highlightbackground=COR_CARTAO_BORDA,
 )
-frame_acoes.grid(row=2, column=0, columnspan=4, sticky="nsew", pady=(22, 0))
+frame_acoes.grid(row=3, column=0, columnspan=4, sticky="nsew", pady=(22, 0))
 frame_acoes.grid_columnconfigure(0, weight=1)
 frame_acoes.grid_columnconfigure(1, weight=1)
 frame_acoes.grid_columnconfigure(2, weight=1)
@@ -452,7 +522,7 @@ criar_acao_rapida(
 # ==========================================================
 
 frame_status = tk.Frame(painel, bg=COR_FUNDO)
-frame_status.grid(row=3, column=0, columnspan=4, sticky="ew", pady=(18, 0))
+frame_status.grid(row=4, column=0, columnspan=4, sticky="ew", pady=(18, 0))
 frame_status.grid_columnconfigure(0, weight=1)
 
 lbl_status = tk.Label(
