@@ -45,6 +45,7 @@ FONTE = "Segoe UI"
 
 criar_tabelas()
 operador_atual = {
+    "id": 1,
     "nome": "Cristiano",
     "usuario": "Cristiano"
 }

@@ -7,18 +7,23 @@ import sys
 # LOCAL DO BANCO DE DADOS
 # ==========================================================
 
-def caminho_do_programa():
+def caminho_do_banco():
+    # Mantém o banco fora da pasta do executável/build.
+    # Assim, recriar ou atualizar o .exe não apaga os dados.
+    pasta = os.path.join(
+        os.environ.get("LOCALAPPDATA", os.path.expanduser("~")),
+        "Sistema_Portaria"
+    )
 
-    if getattr(sys, "frozen", False):
-        return os.path.dirname(sys.executable)
+    os.makedirs(pasta, exist_ok=True)
 
-    return os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(
+        pasta,
+        "portaria.db"
+    )
 
 
-CAMINHO_BANCO = os.path.join(
-    caminho_do_programa(),
-    "portaria.db"
-)
+CAMINHO_BANCO = caminho_do_banco()
 
 
 # ==========================================================

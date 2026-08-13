@@ -141,16 +141,16 @@ def abrir_registro_entrada(janela_principal, operador_atual):
         bg=COR_CARTAO, fg=COR_TEXTO_2
     ).grid(row=0, column=0, sticky="w", padx=(0, 16), pady=10)
 
-    combo = ttk.Combobox(form, font=(FONTE, 11), state="readonly")
-    combo.grid(row=0, column=1, sticky="ew", ipady=5, pady=10)
+    combo = criar_entry(form)
+    combo.grid(row=0, column=1, sticky="ew", ipady=8, pady=10)
 
     tk.Label(
         form, text="Apartamento de destino *", font=(FONTE, 10, "bold"),
         bg=COR_CARTAO, fg=COR_TEXTO_2
-    ).grid(row=1, column=0, sticky="w", padx=(0, 16), pady=10)
+    ).grid(row=2, column=0, sticky="w", padx=(0, 16), pady=10)
 
     apto = criar_entry(form)
-    apto.grid(row=1, column=1, sticky="ew", ipady=8, pady=10)
+    apto.grid(row=2, column=1, sticky="ew", ipady=8, pady=10)
 
     mapa = {}
     nomes = []
@@ -167,7 +167,93 @@ def abrir_registro_entrada(janela_principal, operador_atual):
             parent=janela
         )
 
-    combo["values"] = nomes
+    # Lista de sugestões exibida logo abaixo do campo.
+    lista_sugestoes = tk.Listbox(
+        form,
+        height=6,
+        font=(FONTE, 10),
+        bg="#FFFFFF",
+        fg="#17202A",
+        selectbackground="#D9E8F6",
+        selectforeground="#17202A",
+        relief="flat",
+        bd=0,
+        highlightthickness=1,
+        highlightbackground=COR_BORDA,
+        activestyle="none",
+    )
+
+    def esconder_sugestoes():
+        lista_sugestoes.grid_remove()
+
+    def mostrar_sugestoes(itens):
+        lista_sugestoes.delete(0, tk.END)
+
+        for item in itens[:8]:
+            lista_sugestoes.insert(tk.END, item)
+
+        if itens:
+            lista_sugestoes.grid(
+                row=1,
+                column=1,
+                sticky="ew",
+                pady=(0, 4),
+            )
+        else:
+            esconder_sugestoes()
+
+    def filtrar_prestadores(_evento=None):
+        termo = combo.get().strip().lower()
+
+        if not termo:
+            esconder_sugestoes()
+            return
+
+        filtrados = [
+            item for item in nomes
+            if termo in item.lower()
+        ]
+
+        mostrar_sugestoes(filtrados)
+
+    def selecionar_sugestao(_evento=None):
+        selecao = lista_sugestoes.curselection()
+
+        if not selecao:
+            return
+
+        selecionado = lista_sugestoes.get(selecao[0])
+
+        combo.delete(0, tk.END)
+        combo.insert(0, selecionado)
+
+        esconder_sugestoes()
+        apto.focus_set()
+
+    def selecionar_primeiro(_evento=None):
+        if lista_sugestoes.size() > 0:
+            lista_sugestoes.selection_clear(0, tk.END)
+            lista_sugestoes.selection_set(0)
+            selecionar_sugestao()
+            return "break"
+
+    def ir_para_lista(_evento=None):
+        if lista_sugestoes.size() > 0:
+            lista_sugestoes.focus_set()
+            lista_sugestoes.selection_clear(0, tk.END)
+            lista_sugestoes.selection_set(0)
+            lista_sugestoes.activate(0)
+            return "break"
+
+    combo.bind("<KeyRelease>", filtrar_prestadores)
+    combo.bind("<Return>", selecionar_primeiro)
+    combo.bind("<Down>", ir_para_lista)
+
+    lista_sugestoes.bind("<Double-1>", selecionar_sugestao)
+    lista_sugestoes.bind("<Return>", selecionar_sugestao)
+    lista_sugestoes.bind("<Escape>", lambda e: (esconder_sugestoes(), combo.focus_set()))
+
+    esconder_sugestoes()
 
     aviso = (
         f"{len(nomes)} prestador(es) disponível(is) para seleção."
@@ -186,7 +272,28 @@ def abrir_registro_entrada(janela_principal, operador_atual):
 
         if not selecionado:
             messagebox.showwarning("Atenção", "Selecione um prestador.", parent=janela)
+            combo.focus_set()
             return
+
+        if selecionado not in mapa:
+            termo = selecionado.strip().lower()
+            correspondencias = [
+                item for item in nomes
+                if termo in item.lower()
+            ]
+
+            if len(correspondencias) == 1:
+                selecionado = correspondencias[0]
+                combo.delete(0, tk.END)
+                combo.insert(0, selecionado)
+            else:
+                messagebox.showwarning(
+                    "Atenção",
+                    "Digite parte do nome e selecione um prestador da lista.",
+                    parent=janela
+                )
+                combo.focus_set()
+                return
 
         if not apartamento:
             messagebox.showwarning(
@@ -226,8 +333,10 @@ def abrir_registro_entrada(janela_principal, operador_atual):
             parent=janela
         )
 
-        combo.set("")
+        combo.delete(0, tk.END)
+        esconder_sugestoes()
         apto.delete(0, tk.END)
+        combo.focus_set()
 
     botoes = tk.Frame(card, bg=COR_CARTAO)
     botoes.pack(fill="x", padx=32, pady=(16, 28))
@@ -238,6 +347,7 @@ def abrir_registro_entrada(janela_principal, operador_atual):
     ).pack(side="right")
 
     apto.bind("<Return>", lambda e: registrar())
+    combo.focus_set()
 
 
 def abrir_acessos_ativos(janela_principal, operador_atual):
