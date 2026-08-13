@@ -1,85 +1,67 @@
 # 🏢 Sistema de Portaria
 
-Sistema desktop desenvolvido em **Python** para auxiliar no controle de acesso de uma portaria de condomínio.
+Sistema desenvolvido em **Python** para auxiliar no controle e gerenciamento de uma portaria.
 
-O projeto foi desenvolvido como forma de aprendizado prático em programação, utilizando uma necessidade real como base para desenvolver as funcionalidades.
+O projeto permite cadastrar moradores, visitantes e prestadores de serviço, além de registrar entradas e saídas de forma organizada.
 
 ## 🚀 Funcionalidades
 
-- Cadastro de moradores
-- Consulta de moradores cadastrados
-- Cadastro de prestadores de serviço
-- Consulta de prestadores cadastrados
-- Cadastro de visitantes
-- Registro de entrada
-- Controle de acessos ativos
-- Registro de saída
-- Histórico de acessos
-- Pesquisa de registros
-- Armazenamento local dos dados
-- Controle de vagas dos apartamentos
+- 👤 Cadastro de moradores
+- 🚶 Cadastro de visitantes
+- 🛠️ Cadastro de prestadores de serviço
+- 🕐 Registro de entrada e saída
+- 🔎 Busca global de registros
+- 🔐 Sistema de login
+- 💾 Backup dos dados
+- 📥 Importação de dados
+- ✅ Validação de informações
 
 ## 🛠️ Tecnologias utilizadas
 
 - Python
-- Tkinter
 - SQLite
+- Tkinter
 - Git
 - GitHub
-- PyInstaller
 
-## 💾 Banco de dados
+## 📁 Estrutura do projeto
 
-O sistema utiliza **SQLite** para armazenamento local das informações.
+- `main.py` — aplicação principal
+- `login.py` — sistema de login
+- `banco.py` — gerenciamento do banco de dados
+- `moradores.py` — cadastro de moradores
+- `visitantes.py` — cadastro de visitantes
+- `prestadores.py` — cadastro de prestadores
+- `acessos.py` — controle de acessos
+- `busca_global.py` — sistema de pesquisa
+- `backup.py` — criação de backups
+- `importador.py` — importação de dados
+- `validacoes.py` — validações do sistema
 
-Por segurança e privacidade, o arquivo real do banco de dados utilizado pelo sistema não é disponibilizado neste repositório.
+## ▶️ Executando o projeto
 
-## 🖥️ Aplicação Desktop
+Tenha o Python instalado no computador.
 
-A interface foi desenvolvida utilizando **Tkinter**.
+Clone o repositório:
 
-Também foi criada uma versão executável para Windows utilizando **PyInstaller**, permitindo executar o sistema sem precisar abrir o código pelo Visual Studio Code.
+git clone https://github.com/kamury1/sistema-portaria.git
 
-## 📚 Objetivo do projeto
+Entre na pasta:
 
-Este projeto foi desenvolvido durante meus estudos de Python com o objetivo de aprender programação através da prática.
+cd sistema-portaria
 
-Durante o desenvolvimento foram trabalhados conceitos como:
+Execute:
 
-- Organização do código em diferentes arquivos
-- Funções
-- Interface gráfica
-- Banco de dados
-- Operações CRUD
-- Pesquisa e filtros
-- Controle de entrada e saída
-- Geração de executável
-- Versionamento com Git
-- Publicação de projeto no GitHub
+python main.py
 
-## 📂 Estrutura do projeto
+## 📌 Sobre o projeto
 
-```text
-Sistema_Portaria/
-│
-├── main.py
-├── banco.py
-├── moradores.py
-├── visitantes.py
-├── prestadores.py
-├── acessos.py
-├── icone_portaria.ico
-└── .gitignore
-```
+Este projeto foi desenvolvido como parte dos meus estudos de programação, buscando aplicar na prática conceitos de Python e desenvolvimento de sistemas.
 
-🤖 Uso de Inteligência Artificial
+A ideia surgiu da necessidade de criar uma ferramenta simples e organizada para auxiliar nas atividades de uma portaria.
 
-Este projeto foi desenvolvido como parte do meu aprendizado em programação, utilizando Inteligência Artificial como apoio na criação do código, resolução de problemas e compreensão da estrutura do sistema.
-
-O objetivo deste projeto é estudar o funcionamento do código, realizar modificações e, gradualmente, desenvolver maior autonomia em programação.
+O sistema continua em desenvolvimento e novas funcionalidades poderão ser adicionadas futuramente.
 
 ## 👨‍💻 Autor
 
-**Cristiano Souza**
-
-Projeto desenvolvido para fins de estudo e aprendizado em desenvolvimento de software.
+Desenvolvido por **Cristiano Souza**.
